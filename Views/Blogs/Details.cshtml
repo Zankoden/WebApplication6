@@ -1,0 +1,249 @@
+﻿@model WebApplication6.Models.Blog
+
+@{
+    ViewData["Title"] = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Blog</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        h2 {
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        p {
+            color: #666;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        .profile-circle {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            overflow: hidden;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-right: 10px;
+            position: relative;
+        }
+
+            .profile-circle img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                position: absolute;
+                top: 0;
+                left: 0;
+            }
+
+        .profile-circle1 {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            overflow: hidden;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-right: 10px;
+            position: relative;
+        }
+
+            .profile-circle1 img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                position: absolute;
+                top: 0;
+                left: 0;
+            }
+
+        .comment-box input {
+            resize: none;
+            width: 100%;
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        .vote-icons {
+            justify-content: flex-end;
+            margin-bottom: 5px;
+        }
+
+            .vote-icons i {
+                cursor: pointer;
+                margin-left: 10px;
+                color: grey;
+            }
+
+    </style>
+</head>
+<body>
+    <div class="container bg-white">
+        <h1>@Model.Title</h1>
+        <div class="d-flex flex-row align-items-center mb-3 mt-5">
+            <div class="profile-circle1 mb-2">
+                <img src="https://hips.hearstapps.com/hmg-prod/images/street-portrait-of-a-young-man-using-mobile-phone-royalty-free-image-1018047498-1564431457.jpg?crop=0.668xw:1.00xh;0.226xw,0&resize=640:*" alt="User Profile Image">
+            </div>
+            <div class="d-flex flex-column">
+                <h4 class="text" style="font-weight:bold">@Model.User.UserName</h4>
+                <h5 class="text-muted">@Model.CreatedDate</h5>
+            </div>
+        </div>
+        <div class="dropdown-divider"></div>
+        <br />
+        <img src="https://letsenhance.io/static/8f5e523ee6b2479e26ecc91b9c25261e/1015f/MainAfter.jpg" alt="User Profile Image" />
+        <p>
+            @Model.Body
+        </p>
+        <div>
+            <a asp-action="Edit" asp-route-id="@Model?.BlogID">Edit</a> |
+            <a asp-action="Index">Back to List</a>
+        </div>
+        <div class="dropdown-divider"></div>
+        <br />
+        <div class="col-md-6 mb-3" style="width:100%;">
+            <div class="card-header col bg-success">
+                <h3>
+                    Add Comment
+                </h3>
+            </div>
+            <br />
+            <div class="d-flex flex-row align-items-center mb-3 ms-1">
+
+                <div class="profile-circle mb-2">
+                    <img src="https://t4.ftcdn.net/jpg/03/98/85/77/360_F_398857704_n44BPhqM68Xk9vT31BeFkLQwWsgeZS6C.jpg" alt="User Profile Image">
+                </div>
+
+                <div class="comment-box" style="width:100%">
+                    <form asp-controller="Comments" asp-action="CreateComment" method="post">
+                        <input type="hidden" name="BlogID" value="@Model.BlogID" />
+                        @* <input type="hidden" name="UserID" value="@ViewBag.CurrentUserId" /> <!-- Replace with the current user's ID --> *@
+                        <input type="hidden" name="UserID" value="1" />
+
+                        <div class="form-group">
+                            <label for="CommentText">Comment:</label>
+                            <textarea class="form-control" name="CommentText" placeholder="Write your comment here" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Submit Comment</button>
+                    </form>
+                </div>
+
+
+
+
+
+
+            </div>
+            @if (ViewBag.Comments != null && ViewBag.Comments.Count > 0)
+            {
+
+                @foreach (var comment in ViewBag.Comments)
+                {
+                    <div class="ms-2 mt-4">
+                        <h4>Comments</h4>
+                        <div class="dropdown-divider"></div>
+                        <div class="d-flex flex-row mb-3 mt-3">
+                            <div class="profile-circle mb-2">
+                                <img src="https://hips.hearstapps.com/hmg-prod/images/street-portrait-of-a-young-man-using-mobile-phone-royalty-free-image-1018047498-1564431457.jpg?crop=0.668xw:1.00xh;0.226xw,0&resize=640:*" alt="User Profile Image">
+                            </div>
+                            <div class="d-flex flex-column ms-3">
+                                <small class="text mb-2" style="font-weight:bold">@Model.User.UserName</small>
+                                <small class="text">@comment.CommentText</small>
+                                <div class="d-flex flex-row mt-2">
+                                    <div class="vote-icons d-flex flex-row">
+                                        <div class="upvote">
+                                            <i class="fa-solid fa-circle-arrow-up"></i>
+                                            <label>100</label> @* upvote count *@
+                                        </div>
+                                        <div class="downvote">
+                                            <i class="fa-solid fa-circle-arrow-down"></i>
+                                            <label>100</label> @* downvote count *@
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex flex-row me-2">
+                                    <div class="Edit me-3 ms-3">
+                                        <a asp-controller="Comments" asp-action="Edit" asp-route-id="@comment.CommentID">Edit</a>
+                                    </div>
+                                    <div class="Delete">
+                                        <a asp-controller="Comments" asp-action="Delete" asp-route-id="@comment.CommentID">Delete</a>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="col-md-6 mb-3" style="width:100%;">
+
+                    <br />
+
+                    <div class="ms-2 mt-4">
+                        <h4>No comments available</h4>
+                    </div>
+                </div>
+            }
+
+        </div>
+    </div>
+</body>
+
+@* @model WebApplication6.Models.Blog
+
+@{
+    ViewData["Title"] = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>Blog</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Title)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Title)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Body)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Body)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.CreatedDate)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.CreatedDate)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.ImagePath)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.ImagePath)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.User)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.User.Id)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model?.BlogID">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div> *@
