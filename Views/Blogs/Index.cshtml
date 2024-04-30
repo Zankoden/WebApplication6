@@ -1,111 +1,6 @@
-﻿@* @using Microsoft.AspNetCore.Identity
-@{
-    ViewData["Title"] = "Index";
-    Layout = "~/Views/Shared/_Layout.cshtml";
-    var reactionCounts = ViewData["ReactionCounts"] as Dictionary<int, (int, int)>; // Adjust the tuple type here
-   
-}
+﻿@using System.Security.Claims
 
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 
-<style>
-    .profile-image img {
-        height: 100%;
-    }
-
-    .card-body {
-        cursor: pointer;
-    }
-
-    /* Style the link as a block element to make the whole card body clickable */
-    .card-link {
-        display: block;
-        color: inherit;
-        text-decoration: none; /* Remove default underline */
-    }
-
-        .card-link:hover {
-            color: inherit; /* Maintain default text color on hover */
-        }
-
-    /* Truncate text after three lines and add ellipsis */
-    .truncate-3-lines {
-        overflow: hidden;
-        display: -webkit-box;
-        -webkit-line-clamp: 3;
-        -webkit-box-orient: vertical;
-    }
-
-    /* Ensure the text doesn't wrap */
-    .no-wrap {
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
-    .vote-icons {
-        margin-bottom: 5px;
-    }
-
-        .vote-icons i {
-            cursor: pointer;
-            font-size: 35px;
-            margin-left: 10px;
-            color: grey;
-        }
-</style>
-
-<div class="container">
-    <h1 class="text-center mb-4">Welcome to Our Blog</h1>
-
-    <div class="text-center mb-3">
-        <a class="btn btn-primary" asp-action="Create">Create New Post</a>
-    </div>
-
-    <div class="row">
-        @foreach (var item in Model)
-        {
-
-            <div class="card mb-3">
-                <div class="card-body " onclick="window.location.href='@Url.Action("Details", "Blogs", new { id = @item.BlogID })';">
-                    <div class="row">
-                        <div class="col-md-8">
-                            <div class="mb-3">
-                                <h3>@item.Title</h3>
-
-                                <p class="text-muted truncate-3-lines">by @item.User.UserName <span id="blogger"></span></p>
-                                <p class="truncate-3-lines">@item.Body</p>
-                            </div>
-                            <p class="text-muted no-wrap">Posted on: @item.CreatedDate.ToShortDateString()</p>
-
-                            <form asp-controller="Reactions" asp-action="CreateVoteReaction" method="post">
-                                <input type="hidden" name="BlogID" value="@item.BlogID" />
-                                <input type="hidden" name="UserID" value="de095b92-ab9b-4c94-b567-87cfd02de87f" /> <!-- Replace with the current user's ID -->
-                                <div class="vote-icons">
-                                    <button type="submit" class="btn btn-link" name="ReactionTypeID" value="1">
-                                        <i class="fa-solid fa-circle-arrow-up"></i>
-                                        <span>@(reactionCounts.ContainsKey(item.BlogID) ? reactionCounts[item.BlogID].Item1 : 0)</span> <!-- Use the actual upvote count -->
-                                    </button>
-                                    <button type="submit" class="btn btn-link" name="ReactionTypeID" value="2">
-                                        <i class="fa-solid fa-circle-arrow-down"></i>
-                                        <span>@(reactionCounts.ContainsKey(item.BlogID) ? reactionCounts[item.BlogID].Item2 : 0)</span> <!-- Use the actual downvote count -->
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="mb-3 profile-image">
-                                <img src="https://letsenhance.io/static/8f5e523ee6b2479e26ecc91b9c25261e/1015f/MainAfter.jpg" class="img-fluid" alt="Placeholder Image">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        }
-    </div>
-</div>
-
- *@
 @{
     ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -190,7 +85,8 @@
                             <p class="text-muted no-wrap">Posted on: @item.CreatedDate.ToShortDateString()</p>
                             <form asp-controller="Reactions" asp-action="CreateVoteReaction" method="post">
                                 <input type="hidden" name="BlogID" value="@item.BlogID" />
-                                <input type="hidden" name="UserID" value="bbf85f3f-ea31-409b-9010-e44b3553a118" /> <!-- Replace with the current user's ID -->
+                                <input type="hidden" name="UserID" value="@User.FindFirstValue(ClaimTypes.NameIdentifier)" />
+
                                 <div class="vote-icons">
                                     <button type="submit" class="btn btn-link" name="ReactionTypeID" value="1">
                                         <i class="fa-solid fa-circle-arrow-up"></i>

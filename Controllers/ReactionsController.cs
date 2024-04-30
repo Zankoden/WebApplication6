@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +12,7 @@ using WebApplication6.Models;
 
 namespace WebApplication6.Controllers
 {
+    [Authorize(Roles = "Blogger")]
     public class ReactionsController : Controller
     {
         private readonly IdentityDBContext _context;
@@ -176,8 +179,20 @@ namespace WebApplication6.Controllers
         /// My own Create method for Upvotes
         [HttpPost]
         [ValidateAntiForgeryToken]
+    
+        
         public async Task<IActionResult> CreateVoteReaction([Bind("BlogID,UserID,ReactionTypeID")] Reaction newReaction)
         {
+
+            if (string.IsNullOrEmpty(newReaction.UserID))
+            {
+
+                // Redirect the user to the login page
+                //return RedirectToAction("Login");
+                string script = "<script>alert('You need to be logged in to perform this action.');</script>";
+                return Content(script, "text/html");
+            }
+
             // Get the existing reaction for the current user, blog, and reaction type
             var existingReaction = await _context.Reactions
                 .FirstOrDefaultAsync(r => r.BlogID == newReaction.BlogID && r.UserID == newReaction.UserID && r.ReactionTypeID == newReaction.ReactionTypeID);
